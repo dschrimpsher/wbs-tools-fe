@@ -1,101 +1,213 @@
-import Image from "next/image";
+'use client'
 
-export default function Home() {
-  return (
-    <div className="grid grid-rows-[20px_1fr_20px] items-center justify-items-center min-h-screen p-8 pb-20 gap-16 sm:p-20 font-[family-name:var(--font-geist-sans)]">
-      <main className="flex flex-col gap-8 row-start-2 items-center sm:items-start">
-        <Image
-          className="dark:invert"
-          src="/next.svg"
-          alt="Next.js logo"
-          width={180}
-          height={38}
-          priority
-        />
-        <ol className="list-inside list-decimal text-sm text-center sm:text-left font-[family-name:var(--font-geist-mono)]">
-          <li className="mb-2">
-            Get started by editing{" "}
-            <code className="bg-black/[.05] dark:bg-white/[.06] px-1 py-0.5 rounded font-semibold">
-              src/app/page.tsx
-            </code>
-            .
-          </li>
-          <li>Save and see your changes instantly.</li>
-        </ol>
+// src/components/StudentInfoPage.tsx
+import React, { useState, ChangeEvent } from "react";
+import axios from "axios";
+import { GenderTypes, Students } from "./types";
 
-        <div className="flex gap-4 items-center flex-col sm:flex-row">
-          <a
-            className="rounded-full border border-solid border-transparent transition-colors flex items-center justify-center bg-foreground text-background gap-2 hover:bg-[#383838] dark:hover:bg-[#ccc] text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5"
-            href="https://vercel.com/new?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
+const StudentInfoPage: React.FC = () => {
+    const [ studentRecNo, setStudentRecNo ] = useState<string>("");
+    const [ studentData, setStudentData ] = useState<Students | null>(null);
+    const [ error, setError ] = useState<string>("");
+
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
+      setStudentRecNo(e.target.value);
+    };
+
+    const handleChange = (e: ChangeEvent<HTMLSelectElement>) => {
+      if (studentData) {
+        setStudentData({ ...studentData, StudentGender: e.target.value });
+      } else {
+        setError("Student data is not loaded yet.");
+      }
+    };
+
+    const fetchStudent = async () => {
+      try {
+        const response = await axios.get(`/api/students/${studentRecNo}`);
+        const student = new Students(response.data);
+        setStudentData(student);
+        setError("");
+      } catch (err) {
+        console.error(err);
+        setError("Student not found or an error occurred.");
+        setStudentData(null);
+      }
+    };
+
+    return (
+      <div className="p-8 font-sans bg-background min-h-screen">
+        <h1>Lookup Student</h1>
+        <p className="wbsInfo">Mayfair Church of Christ WBS ID: AL-025</p>
+        <div className="mb-6">
+          <input
+            className="input1"
+            type="text"
+            placeholder="Enter Student ID"
+            value={studentRecNo}
+            onChange={handleInputChange}
+          />
+          <button className="button1"
+                  onClick={fetchStudent}
           >
-            <Image
-              className="dark:invert"
-              src="/vercel.svg"
-              alt="Vercel logomark"
-              width={20}
-              height={20}
-            />
-            Deploy now
-          </a>
-          <a
-            className="rounded-full border border-solid border-black/[.08] dark:border-white/[.145] transition-colors flex items-center justify-center hover:bg-[#f2f2f2] dark:hover:bg-[#1a1a1a] hover:border-transparent text-sm sm:text-base h-10 sm:h-12 px-4 sm:px-5 sm:min-w-44"
-            href="https://nextjs.org/docs?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-            target="_blank"
-            rel="noopener noreferrer"
-          >
-            Read our docs
-          </a>
+            Search Student
+          </button>
         </div>
-      </main>
-      <footer className="row-start-3 flex gap-6 flex-wrap items-center justify-center">
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org/learn?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/file.svg"
-            alt="File icon"
-            width={16}
-            height={16}
-          />
-          Learn
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://vercel.com/templates?framework=next.js&utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/window.svg"
-            alt="Window icon"
-            width={16}
-            height={16}
-          />
-          Examples
-        </a>
-        <a
-          className="flex items-center gap-2 hover:underline hover:underline-offset-4"
-          href="https://nextjs.org?utm_source=create-next-app&utm_medium=appdir-template-tw&utm_campaign=create-next-app"
-          target="_blank"
-          rel="noopener noreferrer"
-        >
-          <Image
-            aria-hidden
-            src="/globe.svg"
-            alt="Globe icon"
-            width={16}
-            height={16}
-          />
-          Go to nextjs.org →
-        </a>
-      </footer>
-    </div>
-  );
-}
+        {error && <p className="text-red-500">{error}</p>}
+        {studentData && (
+          <div className="p-6 bg-secondary rounded shadow">
+            <h2 className="wbsInfo">Student Information</h2>
+            <label className="label2">
+              Student Name
+            </label>
+            <input
+              className="inputShow"
+              type="text"
+              value={studentData.StudentFirstName}
+              onChange={handleInputChange}
+            />
+            <input
+              className="inputShow"
+              type="text"
+              value={studentData.StudentLastName}
+              onChange={handleInputChange}
+            />
+            <p>
+              <label className="label2">
+                Student ID
+              </label>
+              <label className="fixedData ml-7">{studentData.StudentRecNo} </label>
+              {studentData.StudentID && studentData.StudentID != studentRecNo && (
+                <label className="fixedData text-accent">({studentData.StudentID}) </label>
+              )}
+            </p>
+            <p>
+              <label className="label2">
+                Student Age
+              </label>
+              <input
+                className="inputShow ml-4"
+                type="text"
+                value={studentData.StudentAge}
+                onChange={handleInputChange}
+              />
+            </p>
+            {
+              studentData.StudentBirthdateIso && (
+                <p>
+                  <label className="label2">
+                    Birthdate
+                  </label>
+                  <input
+                    className="inputShow ml-10"
+                    type="date"
+                    defaultValue={studentData.StudentBirthdateIso}
+                    onChange={handleInputChange}
+                  />
+                </p>
+              )
+            }
+            <p>
+              <label className="label2">
+                Gender
+              </label>
+              <select
+                className="inputShow ml-12"
+                value={studentData.StudentGenderShow || GenderTypes.Unknown}
+                onChange={handleChange}>
+                <option value={GenderTypes.Male}>Male</option>
+                <option value={GenderTypes.Female}>Female</option>
+                <option value={GenderTypes.Unknown}>Unknown</option>
+              </select>
+            </p>
+            <div className="option-divider"/>
+            <h2 className="wbsInfo my-4">Contact Information</h2>
+            <p>
+              <label className="label2">
+                Email Address
+              </label>
+              <input
+                className="inputShow ml-1"
+                type="text"
+                value={studentData.StudentEmailAddress}
+                onChange={handleInputChange}
+              />
+            </p>
+            <p>
+              <label className="label2">
+                Phone #1
+              </label>
+              <input
+                className="inputShow ml-9"
+                type="text"
+                value={studentData.StudentPhone1}
+                onChange={handleInputChange}
+              />
+            </p>
+            <p>
+              <label className="label2">
+                Phone #2
+              </label>
+              <input
+                className="inputShow ml-9"
+                type="text"
+                value={studentData.StudentPhone2}
+                onChange={handleInputChange}
+              />
+            </p>
+            <p>
+              <label className="label2">
+                Postal Address
+              </label>
+              <input
+                className="inputShow ml-0"
+                type="text"
+                value={studentData.StudentPostalAddress}
+                onChange={handleInputChange}
+              />
+            </p>
+            <p>
+              <label className="label2">
+                City
+              </label>
+              <input
+                className="inputShow ml-20"
+                type="text"
+                value={studentData.StudentCity}
+                onChange={handleInputChange}
+              />
+            </p>
+            <p>
+              <label className="label2">
+                <span>State</span>{" "}
+              </label>
+              <input
+                className="inputShow ml-16"
+                type="text"
+                value={studentData.StudentState}
+                onChange={handleInputChange}
+              />
+            </p>
+            <p>
+              <label className="label2">
+                Country
+              </label>
+              <input
+                className="inputShow ml-12"
+                type="text"
+                value={studentData.StudentCountry}
+                onChange={handleInputChange}
+              />
+            </p>
+            {/* Additional fields as needed */
+            }
+          </div>
+        )
+        }
+      </div>
+    )
+      ;
+  }
+;
+
+export default StudentInfoPage;

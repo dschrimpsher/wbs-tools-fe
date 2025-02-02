@@ -3,19 +3,53 @@
 @tailwind utilities;
 
 :root {
-  --background: #ffffff;
-  --foreground: #171717;
+  --background: #2A2939;
+  --foreground: #4F6D7A;
 }
 
 @media (prefers-color-scheme: dark) {
   :root {
-    --background: #0a0a0a;
-    --foreground: #ededed;
+    --background: #DBD9EE;
+    --foreground: #397d96;
   }
 }
+
 
 body {
   color: var(--foreground);
   background: var(--background);
-  font-family: Arial, Helvetica, sans-serif;
+  /*font-family: Arial, Helvetica, sans-serif;*/
+}
+
+@layer base {
+  h1 {
+    @apply text-3xl font-bold text-secondary text-center;
+  }
+  .wbsInfo {
+    @apply text-xl font-bold text-primary mb-6 text-center;
+  }
+  .label1 {
+    @apply text-left mr-4 text-2xl text-white;
+  }
+  .label2 {
+    @apply text-left mr-6 text-white;
+  }
+  .fixedData {
+    @apply text-white ;
+  }
+  .input1 {
+    @apply rounded p-2 border rounded text-primary placeholder:text-accent border-accent rounded mr-2 focus:outline-none focus:ring-2
+  }
+  .inputShow {
+    @apply rounded text-base bg-background pl-1 py-0 mr-2 my-1;
+  }
+  .button1 {
+    @apply p-2 shadow border text-white bg-accent border-accent rounded-lg hover:bg-primary focus:outline-none focus:ring-2 focus:outline-none focus:ring-2
+  }
+
+  .option-divider {
+    border-top: 1px solid ;
+    margin-top:10px;
+  }
+
 }
