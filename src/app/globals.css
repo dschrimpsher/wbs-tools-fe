@@ -37,11 +37,17 @@ body {
   .fixedData {
     @apply text-white ;
   }
+  .checkbox1 {
+    @apply text-accent;
+  }
   .input1 {
     @apply rounded p-2 border rounded text-primary placeholder:text-accent border-accent rounded mr-2 focus:outline-none focus:ring-2
   }
   .inputShow {
-    @apply rounded text-base bg-background pl-1 py-0 mr-2 my-1;
+    @apply rounded text-base bg-background pl-1 py-0 mr-2 my-1 w-1/2;
+  }
+  .inputShowName {
+    @apply rounded text-base bg-background pl-1 py-0 mr-2 my-1 w-1/4;
   }
   .button1 {
     @apply p-2 shadow border text-white bg-accent border-accent rounded-lg hover:bg-primary focus:outline-none focus:ring-2 focus:outline-none focus:ring-2
