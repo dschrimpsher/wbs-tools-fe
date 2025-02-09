@@ -422,17 +422,21 @@ export class Lessons {
   LessonShortName: string;
   // Relation: A Lesson may have many Grades.
   Grades: Grades[];
+  Answers?: Answers[];
 
   constructor(data: {
     LessonRecNo: number;
     LessonName: string;
     LessonShortName: string;
     Grades?: Grades[];
+    Answers?: Answers[];
   }) {
     this.LessonRecNo = data.LessonRecNo;
     this.LessonName = data.LessonName;
     this.LessonShortName = data.LessonShortName;
     this.Grades = data.Grades || [];
+    if (!data.Answers) { console.error(`${this.LessonRecNo} No Answers Found`); }
+    this.Answers = data.Answers || [];
   }
 }
 

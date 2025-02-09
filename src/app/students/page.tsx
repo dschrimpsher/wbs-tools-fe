@@ -4,8 +4,8 @@ import React, { ChangeEvent, useState } from "react";
 import axios from "axios";
 import { Contacts, GenderTypes, Students, Students_StudentWBSBefore, Teachers } from "../types";
 import SearchStudent from "../components/SearchStudent";
-import StudentInfo from "@/app/components/StudentInfo";
-import studentInfo from "@/app/components/StudentInfo";  // ✅ Import the new component
+import StudentInfo from "@/app/components/StudentEdit";
+import studentInfo from "@/app/components/StudentEdit";  // ✅ Import the new component
 
 const StudentInfoPage: React.FC = () => {
   const [studentRecNo, setStudentRecNo] = useState<string>("");
