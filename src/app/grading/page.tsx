@@ -3,7 +3,7 @@
 // src/students/StudentInfoPage.tsx
 import React, {ChangeEvent, useState} from "react";
 import axios from "axios";
-import {Answers, Contacts, GenderTypes, Lessons, Students, Students_StudentWBSBefore, Teachers} from "../types";
+import {Answers, Contacts, GenderTypes, Grades, Lessons, Students, Students_StudentWBSBefore, Teachers} from "../types";
 import SearchStudent from "@/app/components/SearchStudent";
 import StudentInfo from "@/app/components/StudentInfo";
 import LessonSelection from "@/app/components/LessonSelection";
@@ -18,6 +18,8 @@ const GradingPage: React.FC = () => {
         const [studentData, setStudentData] = useState<Students | null>(null);
         const [allLessonData, setAllLessonData] = useState<Lessons[]>([]);
         const [selectedLessonData, setSelectedLessonData] = useState<Lessons | null>(null);
+        const [allGrades, setAllGrades] = useState<Grades[]>([]);
+        const [selectedLessonGrades, setSelectedLessonGrades] = useState<Grades | null>(null);
         const [error, setError] = useState<string>("");
 
         const router = useRouter();
@@ -25,8 +27,10 @@ const GradingPage: React.FC = () => {
             router.push(`/letters/${studentRecNo}`); // Change to your target page
         };
 
-        const handleStudentGrade = () => {
-            // TODO: Post grade data here ...
+        const handleStudentGrade = async () => {
+            const response = await axios.post(`/api/grades`);
+
+
         };
 
         const handleInputChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -42,7 +46,7 @@ const GradingPage: React.FC = () => {
         };
 
         const handleSelectLessonChange = async (e: ChangeEvent<HTMLSelectElement>) => {
-            console.log(`Handling Select Lesson ${e.target.value}`);
+            setMissedQuestions(0);
             const index = parseInt(e.target.value);
             if (index > 0) {
                 let l = allLessonData.find((v: Lessons) => v.LessonRecNo === index);
@@ -50,10 +54,14 @@ const GradingPage: React.FC = () => {
                     setSelectedLessonData(null);
                 } else {
                     setSelectedLessonData(l);
+                    const g = allGrades.find((v: Grades) => v.GradeLessonsRecNo === index);
+                    if (g) {
+                        setSelectedLessonGrades(g);
+                    } else {
+                        setSelectedLessonGrades(null);
+                    }
                     if (l.Answers && l.Answers.length > 0) {
                         setTotalQuestions(l.Answers.length);
-                    } else {
-                        console.log(`What the hell ${l.Answers}`);
                     }
                 }
             } else {
@@ -71,11 +79,16 @@ const GradingPage: React.FC = () => {
                 const lessons = response2.data.map((item: any) => {
                     return new Lessons(item);
                 });
+                const response3 = await axios.get(`/api/grades/${studentRecNo}`);
+                const grades = response3.data.map((item: any) => {
+                    return new Grades(item);
+                });
                 setAllLessonData(lessons);
+                setAllGrades(grades);
                 setSelectedLessonData(lessons[0]);
+                setSelectedLessonGrades(null);
                 setLessonRecNo(lessons[0].LessonRecNo);
                 setTotalQuestions(lessons[0].Answers.length);
-                console.log(`set selectedLesson to ${lessons[0].LessonRecNo}`);
                 setError("");
             } catch (err) {
                 console.error(err);
@@ -110,7 +123,8 @@ const GradingPage: React.FC = () => {
                             {selectedLessonData && (
                                 <AnswerComp missedQuestions={missedQuestions} totalQuestions={totalQuestions}
                                             selectedLesson={selectedLessonData}
-                                            handleAnswerChange={handleAnswerChange} />
+                                            handleAnswerChange={handleAnswerChange}
+                                            selectedLessonGrades={selectedLessonGrades}/>
                             )}
                         </div>
                     </div>

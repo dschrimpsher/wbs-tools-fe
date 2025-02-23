@@ -38,7 +38,7 @@ body {
     @apply p-8 font-sans bg-background min-h-screen;
   }
   .workArea {
-    @apply p-6 bg-secondary rounded shadow grid grid-cols-3 gap-4;
+    @apply min-h-screen p-6 bg-secondary rounded shadow grid grid-cols-3 gap-4;
   }
   .questions {
     @apply p-1 bg-secondary rounded shadow grid grid-cols-3;
