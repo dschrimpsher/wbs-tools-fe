@@ -24,23 +24,23 @@ const AnswerComp: React.FC<AnswersProps> = ({missedQuestions, totalQuestions, se
 
             <div className="option-divider"/>
 
-            {selectedLessonGrades && (
+            {selectedLessonGrades?.GradeRecNo && (
                 <div className="grade">
                     <label className="label2">Lesson Completed {t} </label><p/>
                     <label className="label2">Score: </label>
                     <label className="gradetext">{selectedLessonGrades.GradeScore}%</label>
                 </div>
             )}
-            {!selectedLessonGrades && selectedLesson && (
+            {!selectedLessonGrades?.GradeRecNo && selectedLesson && (
                 <div className="grade">
                     <label className="subsectionHeading">Check Box for wrong answers</label> <p/>
                     <label className="label2">Score: </label>
                     <label className="gradetext">{totalQuestions - missedQuestions}/{totalQuestions}</label>
-                    <label className="gradetext ml-4">{100 * (totalQuestions - missedQuestions) / totalQuestions}%</label>
+                    <label className="gradetext ml-4">{selectedLessonGrades?.GradeScore}%</label>
 
                 </div>
             )}
-            {!selectedLessonGrades && selectedLesson?.Answers && (
+            {!selectedLessonGrades?.GradeRecNo && selectedLesson?.Answers && (
                 selectedLesson.Answers.map((answer, index) =>
                     <div key={index}>
                         <div className="questions">

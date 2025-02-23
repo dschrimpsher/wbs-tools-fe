@@ -28,8 +28,18 @@ const GradingPage: React.FC = () => {
         };
 
         const handleStudentGrade = async () => {
-            const response = await axios.post(`/api/grades`);
-
+            if (selectedLessonGrades) {
+                try {
+                    const response = await axios.post(
+                        '/api/grades',
+                        {gradeInfo: selectedLessonGrades},
+                    );
+                    console.log('Grade submitted:', response.data);
+                    setSelectedLessonGrades(response.data);
+                } catch (error) {
+                    console.error('Error submitting grade:', error);
+                }
+            }
 
         };
 
@@ -38,11 +48,16 @@ const GradingPage: React.FC = () => {
         };
 
         const handleAnswerChange = (e: ChangeEvent<HTMLInputElement>) => {
+            let mq = missedQuestions;
             if (e.target.checked) {
-                setMissedQuestions(missedQuestions + 1);
+                mq += 1;
             } else {
-                setMissedQuestions(missedQuestions - 1);
+                mq -= 1;
             }
+            if (selectedLessonGrades) {
+                selectedLessonGrades.GradeScore = 100 * (totalQuestions - mq) / totalQuestions
+            }
+            setMissedQuestions(mq);
         };
 
         const handleSelectLessonChange = async (e: ChangeEvent<HTMLSelectElement>) => {
@@ -58,7 +73,14 @@ const GradingPage: React.FC = () => {
                     if (g) {
                         setSelectedLessonGrades(g);
                     } else {
-                        setSelectedLessonGrades(null);
+                        const temp = new Grades({
+                            GradeScore: 100,
+                            GradeComments: "",
+                            GradeDateGraded: new Date(),
+                            GradeLessonsRecNo: l.LessonRecNo,
+                            GradeStudentsRecNo: Number(studentRecNo),
+                        });
+                        setSelectedLessonGrades(temp);
                     }
                     if (l.Answers && l.Answers.length > 0) {
                         setTotalQuestions(l.Answers.length);
@@ -86,8 +108,21 @@ const GradingPage: React.FC = () => {
                 setAllLessonData(lessons);
                 setAllGrades(grades);
                 setSelectedLessonData(lessons[0]);
-                setSelectedLessonGrades(null);
                 setLessonRecNo(lessons[0].LessonRecNo);
+                const g = grades.find((v: Grades) => v.GradeLessonsRecNo === lessons[0].LessonRecNo);
+                if (g) {
+                    setSelectedLessonGrades(g);
+                } else {
+                    const temp = new Grades({
+                        GradeScore: 100,
+                        GradeComments: "",
+                        GradeDateGraded: new Date(),
+                        GradeLessonsRecNo: lessons[0].LessonRecNo,
+                        GradeStudentsRecNo: Number(studentRecNo),
+                    });
+                    setSelectedLessonGrades(temp);
+                    setMissedQuestions(0);
+                }
                 setTotalQuestions(lessons[0].Answers.length);
                 setError("");
             } catch (err) {
@@ -116,7 +151,7 @@ const GradingPage: React.FC = () => {
                                 <LessonSelection lessonSelected={lessonRecNo} lessons={allLessonData}
                                                  handleLessonChange={handleSelectLessonChange}
                                                  handleStudentLetter={handleStudentLetter}
-                                handleStudentGrade={handleStudentGrade}/>
+                                                 handleStudentGrade={handleStudentGrade}/>
                             )}
                         </div>
                         <div>
